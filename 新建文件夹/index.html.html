@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI小手机</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #fff;
+}
+.status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  font-size: 12px;
+  color: #333;
+  z-index: 100;
+  background: #fff;
+}
+.desktop {
+  width: 100vw;
+  height: 100vh;
+  padding: 35px 20px 20px;
+}
+.datetime-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.weekday { font-size: 14px; color: #b8a0a8; margin-bottom: 4px; }
+.date { font-size: 20px; color: #777; margin-bottom: 6px; }
+.time-display { font-size: 48px; color: #222; font-weight: 100; }
+.widgets-grid {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.avatar-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #e8d0d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a88a92;
+  font-size: 24px;
+}
+.glass-text-bar {
+  background: #fff;
+  border: 1px solid #f0e9ee;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #666;
+}
+.apps-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px 15px;
+}
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.app-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: 0.2s;
+}
+.app:active .app-icon { transform: scale(0.92); }
+.app-name { font-size: 12px; color: #888; }
+.app-icon-wechat { background: #d8b4c0; }
+.app-icon-settings { background: #c8b4c8; }
+.app-icon-love { background: #e8b8c8; }
+.app-icon-forum { background: #c0b4d0; }
+</style>
+</head>
+
+<body>
+<div class="status-bar">
+  <div id="barTime">00:00</div>
+  <div><i class="fas fa-wifi"></i> <i class="fas fa-battery-three-quarters"></i></div>
+</div>
+
+<div class="desktop">
+  <div class="datetime-container">
+    <div class="weekday" id="weekday"></div>
+    <div class="date" id="date"></div>
+    <div class="time-display" id="timeDisplay"></div>
+  </div>
+
+  <div class="widgets-grid">
+    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+    <div class="glass-section">
+      <div class="glass-text-bar">今日心情：美好的一天</div>
+      <div class="glass-text-bar">待办事项：完成项目</div>
+    </div>
+  </div>
+
+  <div class="apps-container">
+    <div class="app" id="wechatBtn">
+      <div class="app-icon app-icon-wechat"><i class="fab fa-weixin"></i></div>
+      <div class="app-name">微信</div>
+    </div>
+    <div class="app">
+      <div class="app-icon app-icon-settings"><i class="fas fa-cog"></i></div>
+      <div class="app-name">设置</div>
+    </div>
+    <div class="app">
+      <div class="app-icon app-icon-love"><i class="fas fa-heart"></i></div>
+      <div class="app-name">情侣空间</div>
+    </div>
+    <div class="app">
+      <div class="app-icon app-icon-forum"><i class="fas fa-comments"></i></div>
+      <div class="app-name">论坛</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateTime() {
+  const now = new Date();
+  const w = ['日', '一', '二', '三', '四', '五', '六'][now.getDay()];
+  document.getElementById('weekday').innerText = '星期' + w;
+  document.getElementById('date').innerText = (now.getMonth() + 1) + '月' + now.getDate() + '日';
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('timeDisplay').innerText = h + ':' + m;
+  document.getElementById('barTime').innerText = h + ':' + m;
+}
+updateTime();
+setInterval(updateTime, 1000);
+</script>
+
+<script src="wechat-module.js"></script>
+
+<script>
+document.getElementById('wechatBtn').onclick = function() {
+  if (window.WechatModule && typeof window.WechatModule.show === 'function') {
+    window.WechatModule.show();
+  } else {
+    console.error('微信模块未加载');
+    alert('微信模块加载中，请稍后再试');
+  }
+};
+</script>
+
+</body>
+</html>
