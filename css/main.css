@@ -1,0 +1,162 @@
+/* 基础样式 + 桌面布局（同之前的大HTML中样式） */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #EFF3F8;
+    min-height: 100vh;
+}
+.desktop {
+    width: 100%;
+    min-height: 100vh;
+    background: #F5F7FE;
+    transition: background 0.3s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.desktop[data-theme="dark"] { background: #121212; color: #eee; }
+.desktop[data-theme="gradient"] { background: linear-gradient(145deg, #E6E9F0, #F0F4FA); }
+
+/* 状态栏 */
+.status-bar {
+    padding: 12px 24px 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1C1C1E;
+}
+.desktop[data-theme="dark"] .status-bar { color: #ddd; }
+
+/* 主内容区 */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 20px 20px;
+}
+
+/* 小组件 */
+.compact-widget {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    border-radius: 32px;
+    padding: 14px 24px;
+    margin: 12px 0 30px;
+    border: 0.5px solid rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.desktop[data-theme="dark"] .compact-widget {
+    background: rgba(30, 30, 40, 0.75);
+}
+.datetime-group { display: flex; align-items: baseline; gap: 12px; }
+.time { font-size: 32px; font-weight: 600; }
+.date { font-size: 15px; opacity: 0.7; }
+.weather-group { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 500; }
+.weather-group i { font-size: 24px; color: #FFB347; }
+.greeting {
+    font-size: 14px;
+    background: rgba(0,0,0,0.05);
+    padding: 6px 14px;
+    border-radius: 40px;
+}
+.desktop[data-theme="dark"] .greeting { background: rgba(255,255,255,0.1); }
+
+/* 中间两个图标 */
+.middle-apps {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    max-width: 300px;
+    margin: 20px auto;
+    width: 100%;
+}
+.app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.icon-bg {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #2C3E66;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+}
+.desktop[data-theme="dark"] .icon-bg {
+    background: rgba(40, 40, 50, 0.9);
+    color: #DDDDFF;
+}
+.app-name { font-size: 13px; font-weight: 500; color: #1D1D2C; }
+.desktop[data-theme="dark"] .app-name { color: #E0E0E0; }
+
+/* Dock栏 */
+.dock {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    margin: 16px 12px 24px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+}
+.desktop[data-theme="dark"] .dock {
+    background: rgba(30, 30, 40, 0.8);
+}
+.dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    flex: 1;
+}
+.dock-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #2C3E66;
+}
+.desktop[data-theme="dark"] .dock-icon {
+    background: rgba(60, 60, 75, 0.8);
+    color: #DDDDFF;
+}
+.dock-label { font-size: 11px; font-weight: 500; opacity: 0.8; }
+.footer-note { text-align: center; font-size: 10px; opacity: 0.4; margin-bottom: 8px; }
+
+/* 模块容器（全屏覆盖，用于显示各功能页面） */
+.module-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    z-index: 30;
+    display: none;
+    overflow-y: auto;
+}
+.module-container.active {
+    display: block;
+}
+/* 每个模块页面内部样式由各自模块文件定义 */
