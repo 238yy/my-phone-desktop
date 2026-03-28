@@ -852,13 +852,12 @@
         showToast("已发送测试通知");
     }
 
+    // ================= 关键修改：返回按钮直接跳转到聊天主页 =================
+    // 如果您的聊天主页文件名不是 index.html，请修改下面这行的 'index.html' 为您的实际文件名（如 chat.html）
     function handleBack() {
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            showToast("返回上一级");
-        }
+        window.location.href = 'index.html';
     }
+    // =====================================================================
 
     function initTheme() {
         const root = document.getElementById('appThemeRoot');
