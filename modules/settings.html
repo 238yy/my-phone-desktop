@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AI 设置中心</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .desktop {
+            background: inherit;
+        }
+
+        .desktop[data-theme="dark"] {
+            background: #0E0E12;
+            color: #eef;
+        }
+
+        .chat-module {
+            background: inherit;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* 页面头部 — 与原聊天模块完全一致 */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 24px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .desktop[data-theme="dark"] .page-header {
+            background: rgba(20,20,30,0.85);
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #007AFF;
+            transition: 0.2s;
+        }
+        .back-btn:hover {
+            opacity: 0.7;
+        }
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            color: #1c1c1e;
+        }
+        .desktop[data-theme="dark"] .page-title {
+            color: #efeff4;
+        }
+        .page-content {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+        }
+
+        /* 设置卡片 */
+        .settings-section {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 0.5px solid rgba(0,0,0,0.03);
+        }
+        .desktop[data-theme="dark"] .settings-section {
+            background: rgba(30,30,40,0.7);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1c1c1e;
+        }
+        .desktop[data-theme="dark"] .section-title {
+            color: #efeff4;
+        }
+        .setting-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .setting-label {
+            width: 110px;
+            font-weight: 500;
+            font-size: 15px;
+            color: #3a3a3c;
+        }
+        .desktop[data-theme="dark"] .setting-label {
+            color: #aeaeb2;
+        }
+        .setting-input {
+            flex: 1;
+            min-width: 180px;
+        }
+        input, select, button {
+            border-radius: 32px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .setting-input input, .setting-input select {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 32px;
+            outline: none;
+            font-family: inherit;
+        }
+        .desktop[data-theme="dark"] .setting-input input,
+        .desktop[data-theme="dark"] .setting-input select {
+            background: #2c2c38;
+            border-color: #444;
+            color: white;
+        }
+        /* 内联按钮 */
+        .inline-button {
+            background: #e9e9ef;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 32px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            color: #007AFF;
+            white-space: nowrap;
+        }
+        .desktop[data-theme="dark"] .inline-button {
+            background: #3a3a44;
+            color: #60a5ff;
+        }
+        /* 主要按钮风格：深灰中性色 */
+        .primary-btn {
+            background: #2c2c38;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 32px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .primary-btn:hover {
+            background: #3a3a44;
+        }
+        .desktop[data-theme="dark"] .primary-btn {
+            background: #3a3a44;
+        }
+        .desktop[data-theme="dark"] .primary-btn:hover {
+            background: #4a4a58;
+        }
+        .danger-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 32px;
+            cursor: pointer;
+        }
+        .secondary-btn {
+            background: #8e8e93;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 32px;
+            cursor: pointer;
+        }
+        /* 开关样式 */
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 30px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .toggle-switch.active {
+            background: #007AFF;
+        }
+        .toggle-switch::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            transition: 0.2s;
+        }
+        .toggle-switch.active::after {
+            left: 21px;
+        }
+        /* 温度滑块 */
+        .temperature-slider {
+            width: 100%;
+            margin: 0 8px;
+        }
+        .temp-value {
+            min-width: 45px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .preset-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .preset-name-input {
+            flex: 2;
+            min-width: 150px;
+        }
+        .preset-select {
+            flex: 3;
+            min-width: 180px;
+        }
+        hr {
+            margin: 16px 0;
+            border-color: rgba(0,0,0,0.05);
+        }
+        .desktop[data-theme="dark"] hr {
+            border-color: rgba(255,255,255,0.1);
+        }
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1c1c1ee6;
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            pointer-events: none;
+            animation: fadeOut 2s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); visibility: hidden; }
+        }
+        .note-text {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 6px;
+        }
+        @media (max-width: 600px) {
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .setting-label {
+                width: auto;
+            }
+            .setting-input {
+                width: 100%;
+            }
+            .page-content {
+                padding: 16px;
+            }
+            .preset-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .preset-name-input, .preset-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="desktop" data-theme="light" id="appThemeRoot">
+    <div class="chat-module">
+        <div class="page-header">
+            <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+            <span class="page-title"><i class="fas fa-sliders-h" style="margin-right: 8px;"></i>AI 设置</span>
+        </div>
+        <div class="page-content" id="settingsPageContent">
+            <!-- 模型预设管理 - 放在第一个 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-archive"></i> 模型预设</div>
+                <div class="preset-row">
+                    <div class="preset-name-input">
+                        <input type="text" id="presetName" placeholder="预设名称 (例如: GPT-4 创意)">
+                    </div>
+                    <button id="savePresetBtn" class="primary-btn"><i class="fas fa-save"></i> 保存当前配置为预设</button>
+                </div>
+                <div class="preset-row">
+                    <div class="preset-select">
+                        <select id="presetSelect">
+                            <option value="">-- 选择已保存预设 --</option>
+                        </select>
+                    </div>
+                    <button id="loadPresetBtn" class="inline-button"><i class="fas fa-download"></i> 加载预设</button>
+                    <button id="deletePresetBtn" class="danger-btn"><i class="fas fa-trash"></i> 删除</button>
+                </div>
+                <div class="note-text">预设会保存当前所有API配置、模型、温度、角色及开关状态。方便快速切换不同配置。</div>
+            </div>
+
+            <!-- API 主配置区块 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-key"></i> 主 API 配置</div>
+                <div class="setting-row">
+                    <div class="setting-label">API URL</div>
+                    <div class="setting-input"><input type="text" id="apiUrl" placeholder="https://api.openai.com/v1" value="https://api.openai.com/v1"></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">API 密钥</div>
+                    <div class="setting-input"><input type="password" id="apiKey" placeholder="sk-..."></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">模型拉取</div>
+                    <div class="setting-input" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <select id="modelSelect" style="flex:2; min-width: 140px;">
+                            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                            <option value="gpt-4">gpt-4</option>
+                        </select>
+                        <button id="fetchModelsBtn" class="inline-button"><i class="fas fa-cloud-download-alt"></i> 拉取模型</button>
+                    </div>
+                </div>
+                <div class="note-text"><i class="fas fa-info-circle"></i> 点击拉取会根据API URL和密钥获取模型列表 (支持OpenAI风格)</div>
+            </div>
+
+            <!-- 副 API 配置 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-exchange-alt"></i> 副 API (备用)</div>
+                <div class="setting-row">
+                    <div class="setting-label">副API URL</div>
+                    <div class="setting-input"><input type="text" id="backupApiUrl" placeholder="可选备用地址"></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">副API密钥</div>
+                    <div class="setting-input"><input type="password" id="backupApiKey" placeholder="备用密钥"></div>
+                </div>
+            </div>
+
+            <!-- 模型参数: 温度 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-thermometer-half"></i> 模型参数</div>
+                <div class="setting-row">
+                    <div class="setting-label">温度 (Temperature)</div>
+                    <div class="setting-input" style="display: flex; align-items: center; gap: 12px;">
+                        <input type="range" id="temperatureSlider" class="temperature-slider" min="0" max="2" step="0.01" value="0.7">
+                        <span id="tempValueDisplay" class="temp-value">0.70</span>
+                    </div>
+                </div>
+                <div class="note-text">值越高输出越随机，越低越确定。推荐 0.5~1.2 之间。</div>
+            </div>
+
+            <!-- 主动消息 + 角色选择 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-comment-dots"></i> 主动消息 & 角色</div>
+                <div class="setting-row flex-between">
+                    <span class="setting-label">主动发消息开关</span>
+                    <div class="setting-input" style="flex:0 0 auto;">
+                        <div id="activeMsgToggle" class="toggle-switch"></div>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">角色选择</div>
+                    <div class="setting-input">
+                        <select id="roleSelect" class="role-select">
+                            <option value="助手">🤖 贴心助手</option>
+                            <option value="朋友">👫 知心朋友</option>
+                            <option value="导师">🎓 智慧导师</option>
+                            <option value="创意家">✨ 创意家</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="note-text">开启后，AI 可能主动发起问候或建议 (取决于聊天模块实现)</div>
+            </div>
+
+            <!-- 后台通知 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-bell"></i> 后台通知</div>
+                <div class="setting-row flex-between">
+                    <span class="setting-label">允许通知</span>
+                    <div class="setting-input" style="flex:0 0 auto;">
+                        <div id="notificationToggle" class="toggle-switch"></div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button id="requestNotifyBtn" class="inline-button"><i class="fas fa-bell"></i> 请求权限</button>
+                    <button id="testNotifyBtn" class="inline-button"><i class="fas fa-vial"></i> 测试通知</button>
+                </div>
+            </div>
+
+            <!-- 数据管理: 导出/导入/清空 -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-database"></i> 数据管理</div>
+                <div class="button-group">
+                    <button id="exportDataBtn" class="secondary-btn"><i class="fas fa-download"></i> 导出数据</button>
+                    <button id="importDataBtn" class="secondary-btn"><i class="fas fa-upload"></i> 导入数据</button>
+                    <button id="clearDataBtn" class="danger-btn"><i class="fas fa-trash-alt"></i> 清空数据</button>
+                </div>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                <div class="note-text">导出包含设置+聊天记录+预设库，导入将覆盖现有数据并刷新</div>
+            </div>
+
+            <!-- 保存按钮 -->
+            <div style="display: flex; justify-content: center; margin: 24px 0 40px;">
+                <button id="saveAllSettingsBtn" class="primary-btn" style="padding: 12px 32px; font-size: 16px;"><i class="fas fa-save"></i> 保存所有设置</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- 存储键名 ----------
+    const SETTINGS_KEY = 'ai_settings_v2';
+    const CHAT_HISTORY_KEY = 'chat_history';
+    const PRESETS_KEY = 'ai_model_presets';
+
+    // 默认配置
+    const defaultSettings = {
+        apiUrl: "https://api.openai.com/v1",
+        apiKey: "",
+        backupApiUrl: "",
+        backupApiKey: "",
+        activeMsgEnabled: false,
+        selectedRole: "助手",
+        notificationEnabled: false,
+        selectedModel: "gpt-3.5-turbo",
+        temperature: 0.7
+    };
+
+    const defaultChatHistory = [
+        { role: "ai", text: "你好！我是你的AI助手，有什么可以帮你？" }
+    ];
+
+    let currentSettings = { ...defaultSettings };
+    let presets = []; // 存储 { name, settings }
+
+    // DOM 元素
+    const apiUrlInput = document.getElementById('apiUrl');
+    const apiKeyInput = document.getElementById('apiKey');
+    const backupApiUrlInput = document.getElementById('backupApiUrl');
+    const backupApiKeyInput = document.getElementById('backupApiKey');
+    const activeMsgToggleDiv = document.getElementById('activeMsgToggle');
+    const roleSelect = document.getElementById('roleSelect');
+    const notificationToggleDiv = document.getElementById('notificationToggle');
+    const modelSelect = document.getElementById('modelSelect');
+    const temperatureSlider = document.getElementById('temperatureSlider');
+    const tempValueDisplay = document.getElementById('tempValueDisplay');
+    const fetchModelsBtn = document.getElementById('fetchModelsBtn');
+    const exportBtn = document.getElementById('exportDataBtn');
+    const importBtn = document.getElementById('importDataBtn');
+    const clearBtn = document.getElementById('clearDataBtn');
+    const saveBtn = document.getElementById('saveAllSettingsBtn');
+    const importFile = document.getElementById('importFileInput');
+    const requestNotifyBtn = document.getElementById('requestNotifyBtn');
+    const testNotifyBtn = document.getElementById('testNotifyBtn');
+    const backBtn = document.getElementById('backBtn');
+    // 预设元素
+    const presetNameInput = document.getElementById('presetName');
+    const savePresetBtn = document.getElementById('savePresetBtn');
+    const presetSelect = document.getElementById('presetSelect');
+    const loadPresetBtn = document.getElementById('loadPresetBtn');
+    const deletePresetBtn = document.getElementById('deletePresetBtn');
+
+    // 辅助函数
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.textContent = message;
+        if (isError) toast.style.background = "#ff3b30e6";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2200);
+    }
+
+    function updateToggleUI() {
+        if (currentSettings.activeMsgEnabled) {
+            activeMsgToggleDiv.classList.add('active');
+        } else {
+            activeMsgToggleDiv.classList.remove('active');
+        }
+        if (currentSettings.notificationEnabled) {
+            notificationToggleDiv.classList.add('active');
+        } else {
+            notificationToggleDiv.classList.remove('active');
+        }
+    }
+
+    // 更新温度显示
+    function updateTemperatureDisplay() {
+        const val = parseFloat(temperatureSlider.value);
+        tempValueDisplay.textContent = val.toFixed(2);
+        currentSettings.temperature = val;
+    }
+
+    // 从表单收集到 currentSettings (不保存)
+    function collectFormSettings() {
+        return {
+            apiUrl: apiUrlInput.value.trim(),
+            apiKey: apiKeyInput.value.trim(),
+            backupApiUrl: backupApiUrlInput.value.trim(),
+            backupApiKey: backupApiKeyInput.value.trim(),
+            activeMsgEnabled: currentSettings.activeMsgEnabled,
+            selectedRole: roleSelect.value,
+            notificationEnabled: currentSettings.notificationEnabled,
+            selectedModel: modelSelect.value,
+            temperature: parseFloat(temperatureSlider.value)
+        };
+    }
+
+    // 将设置应用到表单UI
+    function applySettingsToForm(settings) {
+        apiUrlInput.value = settings.apiUrl || "";
+        apiKeyInput.value = settings.apiKey || "";
+        backupApiUrlInput.value = settings.backupApiUrl || "";
+        backupApiKeyInput.value = settings.backupApiKey || "";
+        roleSelect.value = settings.selectedRole || "助手";
+        modelSelect.value = settings.selectedModel || "gpt-3.5-turbo";
+        temperatureSlider.value = settings.temperature !== undefined ? settings.temperature : 0.7;
+        updateTemperatureDisplay();
+        currentSettings.activeMsgEnabled = settings.activeMsgEnabled === true;
+        currentSettings.notificationEnabled = settings.notificationEnabled === true;
+        updateToggleUI();
+    }
+
+    // 加载设置到内存和表单
+    function loadSettingsToForm() {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                currentSettings = { ...defaultSettings, ...parsed };
+            } catch(e) { console.warn(e); }
+        } else {
+            currentSettings = { ...defaultSettings };
+        }
+        applySettingsToForm(currentSettings);
+    }
+
+    // 保存当前设置到 localStorage (持久化)
+    function saveSettingsToStorage(showSuccessMsg = true) {
+        const newSettings = collectFormSettings();
+        currentSettings = { ...newSettings };
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
+        if (showSuccessMsg) {
+            showToast("✅ 设置已保存成功！", false);
+        }
+        return true;
+    }
+
+    // ---------- 预设管理 ----------
+    function loadPresetsFromStorage() {
+        const stored = localStorage.getItem(PRESETS_KEY);
+        if (stored) {
+            try {
+                presets = JSON.parse(stored);
+                if (!Array.isArray(presets)) presets = [];
+            } catch(e) { presets = []; }
+        } else {
+            presets = [];
+        }
+        updatePresetSelect();
+    }
+
+    function updatePresetSelect() {
+        presetSelect.innerHTML = '<option value="">-- 选择已保存预设 --</option>';
+        presets.forEach((preset, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = preset.name;
+            presetSelect.appendChild(option);
+        });
+    }
+
+    function saveCurrentAsPreset() {
+        const name = presetNameInput.value.trim();
+        if (!name) {
+            showToast("请输入预设名称", true);
+            return;
+        }
+        // 检查是否重名，如果存在则询问覆盖
+        const existingIndex = presets.findIndex(p => p.name === name);
+        const settingsToSave = collectFormSettings();
+        const presetData = { name, settings: settingsToSave };
+        if (existingIndex !== -1) {
+            if (confirm(`预设 "${name}" 已存在，是否覆盖？`)) {
+                presets[existingIndex] = presetData;
+                showToast(`预设 "${name}" 已更新`);
+            } else {
+                return;
+            }
+        } else {
+            presets.push(presetData);
+            showToast(`预设 "${name}" 保存成功`);
+        }
+        localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+        updatePresetSelect();
+        presetNameInput.value = ''; // 清空输入框
+    }
+
+    function loadSelectedPreset() {
+        const idx = presetSelect.value;
+        if (idx === "") {
+            showToast("请选择一个预设", true);
+            return;
+        }
+        const preset = presets[parseInt(idx)];
+        if (preset && preset.settings) {
+            applySettingsToForm(preset.settings);
+            // 同步到 currentSettings 内存
+            const newSettings = collectFormSettings();
+            currentSettings = { ...newSettings };
+            showToast(`已加载预设: ${preset.name}`);
+        } else {
+            showToast("预设加载失败", true);
+        }
+    }
+
+    function deleteSelectedPreset() {
+        const idx = presetSelect.value;
+        if (idx === "") {
+            showToast("请选择一个预设", true);
+            return;
+        }
+        const presetName = presets[parseInt(idx)].name;
+        if (confirm(`确定删除预设 "${presetName}" 吗？`)) {
+            presets.splice(parseInt(idx), 1);
+            localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+            updatePresetSelect();
+            showToast(`预设 "${presetName}" 已删除`);
+        }
+    }
+
+    // ----- 其他功能 (模型拉取，通知，导入导出等) -----
+    async function fetchModelsFromAPI() {
+        const baseUrl = apiUrlInput.value.trim();
+        const apiKey = apiKeyInput.value.trim();
+        if (!baseUrl) {
+            showToast("请先填写 API URL", true);
+            return;
+        }
+        let modelsUrl = baseUrl.endsWith('/') ? baseUrl + 'models' : baseUrl + '/models';
+        try {
+            showToast("正在拉取模型列表...");
+            const response = await fetch(modelsUrl, {
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            let modelList = [];
+            if (data.data && Array.isArray(data.data)) {
+                modelList = data.data.map(m => m.id).filter(id => typeof id === 'string');
+            } else if (data.models && Array.isArray(data.models)) {
+                modelList = data.models.map(m => m.id || m);
+            } else {
+                throw new Error("响应格式异常");
+            }
+            if (modelList.length === 0) throw new Error("未找到模型");
+            const originalVal = modelSelect.value;
+            modelSelect.innerHTML = '';
+            modelList.forEach(modelId => {
+                const option = document.createElement('option');
+                option.value = modelId;
+                option.textContent = modelId;
+                modelSelect.appendChild(option);
+            });
+            if (modelList.includes(originalVal)) modelSelect.value = originalVal;
+            else if (modelList.length) modelSelect.value = modelList[0];
+            showToast(`成功拉取 ${modelList.length} 个模型 ✅`);
+        } catch (err) {
+            console.warn(err);
+            showToast(`拉取失败: ${err.message}，使用演示模型列表`, true);
+            const demoModels = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'claude-3-opus', 'gemini-pro'];
+            modelSelect.innerHTML = '';
+            demoModels.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                modelSelect.appendChild(opt);
+            });
+            modelSelect.value = currentSettings.selectedModel && demoModels.includes(currentSettings.selectedModel) ? currentSettings.selectedModel : 'gpt-3.5-turbo';
+        }
+    }
+
+    function exportAllData() {
+        const settings = collectFormSettings();
+        let chatHistory = [];
+        try {
+            const storedChat = localStorage.getItem(CHAT_HISTORY_KEY);
+            chatHistory = storedChat ? JSON.parse(storedChat) : defaultChatHistory;
+        } catch(e) { chatHistory = defaultChatHistory; }
+        const exportData = {
+            version: "1.0",
+            exportDate: new Date().toISOString(),
+            settings: settings,
+            chatHistory: chatHistory,
+            presets: presets
+        };
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ai_backup_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("导出数据成功 📁");
+    }
+
+    function importDataFromFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (!imported.settings || !imported.chatHistory) {
+                    throw new Error("文件结构不完整，缺少 settings 或 chatHistory");
+                }
+                const newSettings = imported.settings;
+                applySettingsToForm(newSettings);
+                // 更新聊天历史
+                if (Array.isArray(imported.chatHistory)) {
+                    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(imported.chatHistory));
+                } else {
+                    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(defaultChatHistory));
+                }
+                // 导入预设库（如果存在）
+                if (imported.presets && Array.isArray(imported.presets)) {
+                    presets = imported.presets;
+                    localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+                    updatePresetSelect();
+                }
+                // 保存设置
+                saveSettingsToStorage(true);
+                showToast("导入成功！设置、聊天记录与预设已覆盖 ✅");
+                loadSettingsToForm(); // 重新同步显示
+            } catch (err) {
+                showToast("导入失败: " + err.message, true);
+            }
+        };
+        reader.onerror = () => showToast("读取文件失败", true);
+        reader.readAsText(file);
+    }
+
+    function clearAllData() {
+        if (confirm("⚠️ 确定清空所有设置、聊天记录和预设库吗？此操作不可撤销。")) {
+            // 重置全局
+            currentSettings = { ...defaultSettings };
+            applySettingsToForm(currentSettings);
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
+            localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(defaultChatHistory));
+            // 清空预设
+            presets = [];
+            localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+            updatePresetSelect();
+            showToast("已清空所有数据，恢复默认设置 🧹");
+        }
+    }
+
+    function handleSaveAll() {
+        saveSettingsToStorage(true);
+        if (currentSettings.notificationEnabled && Notification.permission !== "granted" && Notification.permission !== "denied") {
+            showToast("通知开关已开启，建议点击「请求权限」以便接收通知", false);
+        }
+    }
+
+    // 通知相关
+    async function requestNotificationPermission() {
+        if (!("Notification" in window)) {
+            showToast("浏览器不支持桌面通知", true);
+            return;
+        }
+        if (Notification.permission === "granted") {
+            showToast("通知权限已开启🎉");
+        } else if (Notification.permission === "denied") {
+            showToast("通知权限被拒绝，无法开启", true);
+        } else {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                showToast("通知权限获取成功！");
+                if (!currentSettings.notificationEnabled) {
+                    currentSettings.notificationEnabled = true;
+                    updateToggleUI();
+                }
+            } else {
+                showToast("通知权限未授予", true);
+            }
+        }
+    }
+
+    function testNotification() {
+        if (!("Notification" in window)) {
+            showToast("浏览器不支持通知", true);
+            return;
+        }
+        if (Notification.permission !== "granted") {
+            showToast("请先点击「请求权限」并允许通知", true);
+            return;
+        }
+        new Notification("AI 助手", { body: "后台通知测试成功！✨", icon: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png" });
+        showToast("已发送测试通知");
+    }
+
+    function handleBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            showToast("返回上一级");
+        }
+    }
+
+    function initTheme() {
+        const root = document.getElementById('appThemeRoot');
+        const savedTheme = localStorage.getItem('theme_mode');
+        if (savedTheme === 'dark') root.setAttribute('data-theme', 'dark');
+        else if (savedTheme === 'light') root.setAttribute('data-theme', 'light');
+        else {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                root.setAttribute('data-theme', 'dark');
+            }
+        }
+    }
+
+    function bindEvents() {
+        activeMsgToggleDiv.addEventListener('click', () => {
+            currentSettings.activeMsgEnabled = !currentSettings.activeMsgEnabled;
+            updateToggleUI();
+        });
+        notificationToggleDiv.addEventListener('click', () => {
+            currentSettings.notificationEnabled = !currentSettings.notificationEnabled;
+            updateToggleUI();
+            if (currentSettings.notificationEnabled && Notification.permission === "denied") {
+                showToast("⚠️ 通知权限已被浏览器阻止，请手动开启", true);
+            }
+        });
+        temperatureSlider.addEventListener('input', () => {
+            updateTemperatureDisplay();
+        });
+        fetchModelsBtn.addEventListener('click', fetchModelsFromAPI);
+        exportBtn.addEventListener('click', exportAllData);
+        importBtn.addEventListener('click', () => importFile.click());
+        importFile.addEventListener('change', (e) => {
+            if (e.target.files.length) importDataFromFile(e.target.files[0]);
+            importFile.value = '';
+        });
+        clearBtn.addEventListener('click', clearAllData);
+        saveBtn.addEventListener('click', handleSaveAll);
+        requestNotifyBtn.addEventListener('click', requestNotificationPermission);
+        testNotifyBtn.addEventListener('click', testNotification);
+        backBtn.addEventListener('click', handleBack);
+
+        // 预设事件
+        savePresetBtn.addEventListener('click', saveCurrentAsPreset);
+        loadPresetBtn.addEventListener('click', loadSelectedPreset);
+        deletePresetBtn.addEventListener('click', deleteSelectedPreset);
+    }
+
+    function init() {
+        initTheme();
+        loadPresetsFromStorage();
+        loadSettingsToForm();
+        bindEvents();
+    }
+    init();
+</script>
+</body>
+</html>
